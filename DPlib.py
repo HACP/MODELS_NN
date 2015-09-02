@@ -1,0 +1,244 @@
+import csv, time, datetime, random
+
+def datetosec(date):
+    x = datetime.datetime.strptime(date, "%Y/%m/%d")
+    return time.mktime(x.timetuple())
+
+def getLabels(data_path, data_file, cat_list, aux_path, stats_file):
+
+    f = open(data_path + data_file,'rU')
+    reader = csv.reader(f)
+    LABELS = [[] for item in cat_list]
+    for row in reader:
+        for ii in range(len(cat_list)):
+            LABELS[ii].append(row[cat_list[ii]])
+    f.close()
+    FREQ = [{x:LIST.count(x) for x in LIST} for LIST in LABELS]
+    
+    fw = open(aux_path + stats_file,'w')
+    
+    for ii in range(len(FREQ)):
+        fw.write(str(cat_list[ii]) + ' ' + str(FREQ[ii].keys()) + ' ' + str(FREQ[ii].values()) + '\n')
+    fw.close()
+    
+
+data_path = '/home/hugo/DATA/' 
+data_file = 'BRENNT_PinkBarre_Data.csv'
+
+aux_path = ''
+stats_file = 'PinkBarre.stats'
+name_list = 'PinkBarre.names'
+
+
+
+def getNameIndex(namelist, name):
+    for ii in range(len(namelist)):
+        if namelist[ii][0] == name:
+            return ii
+    return -1
+
+def getDerivated(item, W):
+    if '-' in item[1]:
+        L2 =  item[1].split('-')
+        return [getNameIndex(W,L2[0]), getNameIndex(W,L2[1]), 'm']
+    if '/' in item[1]:
+        L2 =  item[1].split('/')
+        return [getNameIndex(W,L2[0]),getNameIndex(W,L2[1]), 'd']
+    else:
+        return getNameIndex(W,item[1])
+
+def getRandomFeature(index, StatsFeature):
+    for item in StatsFeature:
+        
+        if int(item[0]) == index:
+            K1 = item[1].replace(']','')
+            K2 = K1.replace('[','')
+            K3 = K2.replace(' ','')
+            K4 = K3.replace("'",'')
+            K5 = K4.split(',')
+
+            
+
+            V1 = item[2].replace(']','')
+            V2 = V1.replace('[','')
+            V3 = map(float,V2.split(','))
+    
+            nK = []
+            nV = []
+            for ii in range(len(K5)):
+                if K5[ii] != '?':
+                   nK.append(K5[ii])
+                   nV.append(V3[ii])
+            
+            TOT = sum(nV)
+
+            coin = random.random()
+            for ii in range(1,len(nK)+1):
+                if 1.*sum(nV[:ii])/TOT > coin:
+                    return nV[ii-1]
+                
+def getStatFeature(feature, index, StatsFeature):
+    
+    if feature == '?':
+        
+        return getRandomFeature(index, StatsFeature)
+    else:
+        for item in StatsFeature:
+        
+            if int(item[0]) == index:
+                K1 = item[1].replace(']','')
+                K2 = K1.replace('[','')
+                K3 = K2.split(',')
+
+            
+
+                V1 = item[2].replace(']','')
+                V2 = V1.replace('[','')
+                V3 = map(float,V2.split(','))
+
+                TOT = sum(V3)
+
+                for ii in range(len(K3)):
+                    L1 = K3[ii].replace("'",'')
+                    L2 = L1.replace(' ','')
+                    if L2 == feature:
+                        return V3[ii]
+                    else:
+                        return 0
+
+def genModifiedData(instance, aux_path, name_list, stats_file):
+    
+    fs = open(aux_path + stats_file)
+    VSTATS = [line.split('[') for line in fs]
+    fs.close()
+
+    
+        
+    
+    fn = open(aux_path+name_list)
+
+    W = []
+    DW = []
+    for line in fn:
+        L1 = line.replace(' ','').replace('.','')
+
+        if ':' in line and ':=' not in line:
+            W.append(L1[:-1].split(':'))
+        if ':=' in line:
+            DW.append(L1[:-1].split(':='))
+
+    WL = [item[0] for item in W] 
+    DL = [item[0] for item in DW]
+    AL = WL + DL
+
+    AllInfo = W + DW
+
+        
+    indexW = []
+    labelsW = []
+    equationsW = []
+
+    for item in W:
+        if item[1] == 'continuous' or item[1] == '0,1':
+            indexW.append(getNameIndex(W,item[0]))
+            labelsW.append(item[0])
+            equationsW.append([item[0], item[0]])
+
+    cat_labels = ['gender', 'lang', 'time_zone', 'klout_topic_1', 'klout_topic_2', 'klout_topic_3', 'klout_topic_4', 'klout_topic_5', 'account_creation_date', 'last_status_time', 'updated_at']
+
+    for item in cat_labels:
+        #indexW.append(getNameIndex(W,item))
+        labelsW.append(item)
+        equationsW.append([item,item])
+
+
+    for item in DW:
+        #indexW.append(getDerivated(item, AllInfo))
+        labelsW.append(item[0])
+        equationsW.append(item)
+
+    data = []
+    for item in equationsW:
+        if getNameIndex(W,item[0])>0 and item[0] not in cat_labels:
+            if instance[getNameIndex(W,item[0])] != '?':
+                data.append(float(instance[getNameIndex(W,item[0])]))
+            else:
+                data.append(0)
+
+        if getNameIndex(W,item[0])>0 and item[0]=='gender':
+            gender_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(gender_i, 2, VSTATS))
+
+        if getNameIndex(W,item[0])>0 and item[0]=='lang':
+            lang_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(lang_i, 5, VSTATS))
+
+        if getNameIndex(W,item[0])>0 and item[0]=='time_zone':
+            time_zone_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(time_zone_i, 6, VSTATS))
+
+        if getNameIndex(W,item[0])>0 and item[0]=='klout_topic_1':
+            kt1_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(kt1_i, 23, VSTATS))
+        
+        if getNameIndex(W,item[0])>0 and item[0]=='klout_topic_2':
+            kt2_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(kt2_i, 24, VSTATS))
+            
+        if getNameIndex(W,item[0])>0 and item[0]=='klout_topic_3':
+            kt3_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(kt3_i, 25, VSTATS))
+
+        if getNameIndex(W,item[0])>0 and item[0]=='klout_topic_4':
+            kt4_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(kt4_i, 26, VSTATS))
+
+        if getNameIndex(W,item[0])>0 and item[0]=='klout_topic_5':
+            kt5_i = instance[getNameIndex(W,item[0])]
+            data.append(getStatFeature(kt5_i, 27, VSTATS))
+
+        if getNameIndex(W,item[0])>0 and item[0] in ['account_creation_date', 'last_status_time', 'updated_at']:
+            data.append(datetosec(instance[getNameIndex(W,item[0])]))
+
+        if getNameIndex(W,item[0])<0:
+            EQ = getDerivated(item, equationsW)
+            if EQ[2] == 'm':
+                comp = data[EQ[0]]-data[EQ[1]]
+            if EQ[2] =='d' and data[EQ[1]]!=0:
+                comp = 1.*data[EQ[0]]/data[EQ[1]]
+            if EQ[2] =='d' and data[EQ[1]]!=0:
+                comp = 0.
+            data.append(comp)
+    return data
+
+def getAllModData(data_path, data_file, aux_path, name_list, stats_file):
+    DATA = []
+    LABEL = []
+
+    f = open(data_path + data_file,'rU')
+    for line in f:
+        L = line[:-1].split(',')
+        if len(L[7])>1 and len(L[8])>1 and len(L[9])>1:
+            
+            INST = genModifiedData(L, aux_path, name_list, stats_file)
+            DATA.append(INST[1:])
+            LABEL.append(INST[0])
+    return DATA, LABEL
+
+def getCompleteInstances(data_path, data_file):
+    f = open(data_path + data_file,'rU')
+    reader = csv.reader(f)
+    
+    for row in reader:
+        S = []
+        for item in row:
+            if item == '?':
+                S.append(1)
+        if len(S)==0:
+            print row
+
+def writeModData(DATA, name):
+    fw = open(name, 'w')
+    for item in DATA:
+        line = str(item).replace('[','').replace(']','')
+        fw.write(line + '\n')

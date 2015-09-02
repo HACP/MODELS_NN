@@ -1,0 +1,50 @@
+followed_back_binary.
+twitter_id: label.
+followed_back_binary: 0,1.
+gender: b, m, f, u.
+recent_kscore: continuous.
+twitter_description_character_count: continuous.
+lang: en,xx-lc.
+time_zone: America/Detroit,America/New_York,AtlanticTime(Canada),CentralTime(US&Canada),EasternTime(US&Canada),Hawaii,HongKong,Indiana(East),MountainTime(US&Canada),PacificTime(US&Canada),Quito,Tokyo.
+account_creation_date: date.
+last_status_time: date.
+updated_at: date.
+account_tenure:= updated_at - account_creation_date.
+status_tenure:= last_status_time - account_creation_date.
+twitter_background_image_url_binary: 0,1.
+twitter_image_url_binary: 0,1.
+twitter_url_binary: 0,1.
+facebook_url_binary: 0,1.
+linkedin_url_binary: 0,1.
+geo_enabled_binary: 0,1.
+twitter_location_binary: 0,1.
+verified_binary: 0,1.
+favourites_count: continuous.
+listed_count: continuous.
+followers_count: continuous.
+friends_count: continuous.
+statuses_count: continuous.
+favourites_tenure_ratio:= favourites_count / account_tenure.
+listed_tenure_ratio:= listed_count / account_tenure.
+followers_tenure_ratio:= followers_count / account_tenure.
+friends_tenure_ratio:= friends_count / account_tenure.
+statuses_tenure_ratio:= statuses_count / account_tenure.
+favourites_listed_ratio:= favourites_count / listed_count.
+favourites_followers_ratio:= favourites_count / followers_count.
+favourites_friends_ratio:= favourites_count / friends_count.
+favourites_statuses_ratio:= favourites_count / statuses_count.
+favourites_kscore_ratio:= favourites_count / recent_kscore.
+listed_followers_ratio:= listed_count / followers_count.
+listed_friends_ratio:= listed_count / friends_count.
+listed_statuses_ratio:= listed_count / statuses_count.
+listed_kscore_ratio:= listed_count / recent_kscore.
+followers_friends_ratio:= followers_count / friends_count.
+followers_statuses_ratio:= followers_count / statuses_count.
+followers_kscore_ratio:= followers_count / recent_kscore.
+friends_statuses_ratio:= friends_count / statuses_count.
+friends_kscore_ratio:= friends_count / recent_kscore.
+klout_topic_1: AffordableCareAct,ArtMuseums,Atlanta,Beauty,CNN,ContinuingEducation,CustomerService,DailyCandy,DorieGreenspan,Energy,Fashion,Fitness,Health,HotYoga,KasimReed,Marathons,Mashable,MichiganStateUniversity,Motorcycles,Movies,RealEstate,RealHousewives,SocialMedia,SoftwareDevelopment,TheBiggestLoser,TimeWarnerCable,ToughMudder,ZacBrownBand.
+klout_topic_2: AlleghenyCollege,Atlanta,BachelorPads,Blogging,Business,Fitness,Foreclosures,Health,Jewelry,KasimReed,KennesawStateUniversity,MiamiUniversity,Music,Nutrition,Paleontology,PoliticalCampaigns,Pregnancy,PublicRelations,Salons,SerenaWilliams,SocialMedia,Television,U.S.CoastGuard,Vegetarianism,VMware,WaterSports,Yoga,ZigZiglar.
+klout_topic_3: Atlanta,B2B,Bachelor'sDegreePrograms,Blogging,Business,Cosmetics,dailymile,eBooks,Entertainment,Fitness,FoodNetwork,KennesawStateUniversity,LocalMedia,Marathons,MercerUniversity,MissouriStateUniversity,Movies,Music,Nutrition,Photography,Pilates,Politics,PopularScience,SanDiego,SavannahStateUniversity,SocialNetworks,Television,Thanksgiving.
+klout_topic_4: ArtMuseums,AutoIndustry,Beauty,Business,dailymile,Gifts,Google,Greenville,Health,KennesawStateUniversity,LocalMedia,Marathons,Marketing,MichiganStateUniversity,Movies,Music,NetApp,Olympia,PGATour,Politics,ScienceFiction,Shopping,SocialMedia,SoYouThinkYouCanDance,Sports,Television,TheNewYorkTimes,Twitter.
+klout_topic_5: Alabama,AlleghenyCollege,ArrestedDevelopment,BerryCollege,Boston,Business,Careers,Christmas,Comedy,Cooking,Football,GeorgiaInstituteofTechnology,GlennBeck,HealthCare,Journalism,KennesawStateUniversity,L.L.Bean,LocalMedia,MercerUniversity,Music,Running,Shoes,Television,TimeWarnerCable,Trains,Twitter,UniversityofDayton,UniversityofMaine.
